@@ -1,0 +1,432 @@
+K8S:---
+---------------------------------------------------------------
+
+Most popular archestration tool..
+
+container + Orchestration
+
+containers:--
+-----------------------------------------------------------------
+
+what containers are : most popular technologyi is Docker...
+
+issues like:--
+
+compatibility/ dependency
+long setup time
+different dev/test/prod environments 
+
+to remove compatibility issues we have docker ..
+
+each component in separate container with own liberary with own dependencies..all on the same VM and same os and separte envirment.. 
+
+once docker configuration is done developers will use..
+
+containers: containeres are completly isolated enivronments..they own process and services and networking interfaces and mount like operating system kernal..
+
+docker uses lxe containers
+
+containers having : libs , dependecies and applications
+
+virtual mechine having: --os, application depenecies libreries... size more required..
+
+docker image: like template, it is use to create one or more containers.. containers are individual 
+
+.war and docker file combined into as docker image..
+-------------------------------------------------------------------------------------------------
+
+Container orchestrations:---
+
+Node:-- Node is a mechine either physical or virtual which is k8s installed.. node is worker mechine , containers will be launched by k8s.. 
+
+if node fails application goes down .. need to have more than one node required.. if one node fails , still our application will be access by other nodes..
+
+muliple nodes called cluster..
+
+cluster can be moniter by master node..
+
+master watches the cluster and containers..
+
+if installed k8s , actually we are intalling the below components..
+
+api server
+etcd --- key value store and data will be store the all the nodes informaton...logs will be store
+kubelet -- agent that run on each container.. kublet will work like containers are working as expected or not..
+controller runtime
+controller --if one container file that will take care..
+scheduler-- to create the containers...
+
+Master vs workernode:---
+---------------------------------------
+
+containers are hosted in worker node...
+
+mater having api server and similerlly worker node having kublet.. that will give the info to api server..
+
+etcd:--- all the information stored in etcd..
+
+kubectl tool will use for deploy and mange the application on k8s cluster, to get cluster info / to get the status of the other cluster etc..
+
+ kubectl run is used to deploy an application on the cluster
+
+ kubectl cluster-info  is used to view infromation about the cluster 
+
+ kubeclt get pods is used to get the all the node part of the cluster.. 
+
+
+How many nodes are part of the cluster?
+
+Ans: Kubectl get nodes..
+
+NAME           STATUS   ROLES                  AGE     VERSION
+controlplane   Ready    control-plane,master   7m36s   v1.26.0+k3s1
+
+
+What is the version of Kubernetes running on the nodes ?
+
+Ans: Kubectl version
+
+WARNING: This version information is deprecated and will be replaced with the output from kubectl version --short.  Use --output=yaml|json to get the full version.
+Client Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.0+k3s1", GitCommit:"fae8817655a8ad1250d40e5b4f9a938cbb9c960a", GitTreeState:"clean", BuildDate:"2022-12-21T00:22:30Z", GoVersion:"go1.19.4", Compiler:"gc", Platform:"linux/amd64"}
+Kustomize Version: v4.5.7
+Server Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.0+k3s1", GitCommit:"fae8817655a8ad1250d40e5b4f9a938cbb9c960a", GitTreeState:"clean", BuildDate:"2022-12-21T00:22:30Z", GoVersion:"go1.19.4", Compiler:"gc", Platform:"linux/amd64"}
+
+
+What is the flavor and version of Operating System on which the Kubernetes nodes are running?
+
+Ans: kubectl get nodes -o wide
+
+NAME           STATUS   ROLES                  AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+controlplane   Ready    control-plane,master   11m   v1.26.0+k3s1   172.25.0.13   <none>        Alpine Linux v3.16   5.4.0-1100-gcp   containerd://1.6.12-k3s1
+
+
+
+Minikube installation: ------
+--------------------------------------------------------------
+
+1.Download the latest release with the command:
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+
+
+
+
+Pod:---
+---------------------------------------------------
+
+containeres not directly deployed on nodes.. the containers encapsulated with the pod .. pod is single instance of a application.. a pod is smallest object that can be created in k8s.. 
+
+
+
+
+
+kubectl run nginx --image nginx 
+
+kubectl get pods
+
+kubectl describe pod nginx
+
+kubectl get pods -o wides  (IP address and node (minikube details))
+
+
+Ymal:---
+--------------------------------------------------------------------------
+
+servers:
+   -    name:server1
+	owner:jhon
+	created:1222
+	status:active
+
+Dictionaries --- unordered
+arays/list --- ordered
+# considered as a comment..
+------------------------------------------------------------------------------
+Pod creation by using yml file for k8s:---
+
+k8s uses ymal files as inputs creats objects as such as pods, replicas, deployments ,services etc
+
+syntax:
+
+apiVersion: 
+kind:
+metadata:
+
+spec:
+
+apiVersion: version of k8s api , use write correct api version---
+
+pod:v1
+service:v1
+Replicaset : apps/v1
+deployment: apps/v1
+
+Kind: Type of object trying to create --- pod, replicaset , service, deployment..
+
+metadata: data about the object.
+  names:myapp-pod
+  labels:     ---> dictionary
+   app: myapp
+   type: front-end
+spec: (it is defferent for different objects..)
+ containers:        (list/array)
+    - name: nginx-container
+      image: nginx
+
+
+after creating execute the below syntax..
+
+kubectl create -f pod-defination.yml
+
+kubectl get pods
+
+kubectl describe pod myapp-pod
+
+
+yml file
+
+pod.yml
+
+apiVersion: v1
+kind: pod
+metadata:
+  name:nginx
+  lables:
+	app:nginx
+	tier:frontend
+spec:
+  containers:
+       	- name:nginx
+	  image:nginx
+	- name: busybox
+	  image: busybox
+
+save and close....
+
+kubectl apply -f pod.yml 
+
+kubectl get pods
+
+kubectl describe pod nginx
+
+
+_______________________________________________
+
+K8S controller:--
+
+monitor k8s objects and respond as per...
+
+what is replica and why we need replicaation...
+
+for high availabilty.. 
+
+if one got failed another will be bring automatically...
+
+load balancing and scalling...
+
+Replication controller older technology that will be replace by replica set...
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name:myapp-rc
+  lables:
+	app:myapp
+	tier:frontend
+spec:
+  template: 
+	
+	metadata:
+ 	 name:nginx
+ 	 lables:
+	  app:nginx
+	  tier:frontend
+	spec:
+  	  containers:
+       	    - name:nginx
+	      image:nginx
+	    - name: busybox
+	      image: busybox
+  replicas: 3
+
+after creating rc-defination.yml
+
+kubectl crate -f rc-defination.yml
+
+kubectl get replicationcontoller
+
+kubectl get pods
+
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name:myapp-rc
+  lables:
+	app:myapp
+	tier:frontend
+spec:
+  template: 
+	
+	metadata:
+ 	 name:nginx
+ 	 lables:
+	  app:nginx
+	  tier:frontend
+	spec:
+  	  containers:
+       	    - name:nginx
+	      image:nginx
+	    - name: busybox
+	      image: busybox
+  replicas: 3
+  selector: 
+    matchLable:
+	type: front-end
+
+after creating replicaset-defination.yml
+
+kubectl crate -f replicaset-defination.yml
+
+kubectl get replicaset
+
+kubectl get pods
+
+if want to edit replicas :6
+
+then 
+
+
+kubectl replace -f replicaset-definition.yml 
+
+kubectl get replicaset
+
+kubectl delete replicaset myreplicaset
+
+kubectl scale --replicaset=6 -f replicaset-definition.yml /kubectl scale replicaset myapp-replicaset --replicas=2
+
+
+kubectl scale --replicaset=6 -f myapp-replicaset
+
+kubectl explain replicaset 
+
+kubecte get rs(short cut of replicaset)
+
+kubectl delete rs replicaset-1
+
+kubectl delete rs replicaset-2
+
+kubectl edit rs new-replics-set
+
+kubectl scale rs new-replica-set --replicas=5
+
+_______________________________________________________________________
+
+Deployments:
+
+
+multiple pods can be deploy by based on replication / replicaset  
+
+provides : upgarade, rooling updates, undo , resume changes..
+
+
+apiVersion: v1
+kind: Deployment
+metadata:
+  name:myapp-rc
+  lables:
+	app:myapp
+	tier:frontend
+spec:
+  template: 
+	
+	metadata:
+ 	 name:nginx
+ 	 lables:
+	  app:nginx
+	  tier:frontend
+	spec:
+  	  containers:
+       	    - name:nginx
+	      image:nginx
+	    - name: busybox
+	      image: busybox
+  replicas: 3
+  selector: 
+    matchLable:
+	type: front-end
+
+
+kubectl create -f deployment-defination.yaml
+
+kubectl get deployments
+
+kubectl get replicaset
+
+kubectl get pods
+
+kubectl create -f deployment-definition-1.yaml 
+ 
+kubectl get deployment httpd-frontend --image=httpd:2.4-alpine --replicas=3
+
+kubectl get deploy
+
+
+Deployment and rollebacks:--
+-------------------------------------------------------------------
+
+rolleout and versioning:---
+
+when you first crate a deployment it triggers rolleout . new rolleout create new revision..
+
+helps us keep track if required exiting version required..
+
+kubectl rollout status deployment/myapp-deployment..
+
+kubectl rollout histroy deployment/ myapp-deployment
+
+we have two types of deployment startgies..
+
+1. destroy all and create new deployment with the new version.. by this application go dwon for some time till deployment will happen(Recrate)
+
+2.  dont destray all of them once.. one by one we can do .. we can mitigate the down time(Rolling update)
+
+Rolling update is default update in k8s..
+
+upgrade means:
+
+updating application version
+
+updating version of docker containers used
+
+updateing the labels, no.of replicas...
+
+once changed ymal file use bellow command..
+
+kubectl apply -f deployment-defination.yml
+
+
+in recreate all shoulbe replica set scalledown to 0 and then scale up with the new replica set...
+
+but rolling update this action will be perform based on parllel method..
+
+upgrades:--
+---------------------------------
+
+when new deployment going on create replicas set and create no.of pods meet the no.of rplicas..
+
+
+when you upgarde k8s deployment object create new rplicaset under the host and start deployment. at same taking down and update the rolling update stratagy..
+
+kubectl get rplicaset..
+
+rollback updates:-
+---------
+
+kubectl rollout undo deployment/myapp-deployment
+
+destroy in new one and old one will be back...
+
+ 
+

@@ -1,0 +1,287 @@
+ kubectl run hello-minikube ---->>> is used to deploy an application on the cluster
+
+ kubectl cluster-info ---->>> is used to view infromation about the cluster 
+
+ kubeclt get pods ----->>> is used to get the all the node part of the cluster.. 
+
+--------------------------------------------------------------------------------------------------------
+
+How many nodes are part of the cluster?
+
+Ans: Kubectl get nodes..
+
+NAME           STATUS   ROLES                  AGE     VERSION
+controlplane   Ready    control-plane,master   7m36s   v1.26.0+k3s1
+
+-----------------------------------------------------------------------------------------------------------------------------
+What is the version of Kubernetes running on the nodes ?
+
+Ans: Kubectl version
+
+WARNING: This version information is deprecated and will be replaced with the output from kubectl version --short.  Use --output=yaml|json to get the full version.
+Client Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.0+k3s1", GitCommit:"fae8817655a8ad1250d40e5b4f9a938cbb9c960a", GitTreeState:"clean", BuildDate:"2022-12-21T00:22:30Z", GoVersion:"go1.19.4", Compiler:"gc", Platform:"linux/amd64"}
+Kustomize Version: v4.5.7
+Server Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.0+k3s1", GitCommit:"fae8817655a8ad1250d40e5b4f9a938cbb9c960a", GitTreeState:"clean", BuildDate:"2022-12-21T00:22:30Z", GoVersion:"go1.19.4", Compiler:"gc", Platform:"linux/amd64"}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+What is the flavor and version of Operating System on which the Kubernetes nodes are running?
+
+Ans: kubectl get nodes -o wide
+
+NAME           STATUS   ROLES                  AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+controlplane   Ready    control-plane,master   11m   v1.26.0+k3s1   172.25.0.13   <none>        Alpine Linux v3.16   5.4.0-1100-gcp   containerd://1.6.12-k3s1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+minikube installation
+
+minikube start
+
+minikube status
+
+kubectl get nodes
+
+kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+
+kubectl get deployments
+
+kubectl expose deploy hello-minikube --type=NodePort --port=8080
+
+minikube service hello-minikube --url 
+
+kubectl delete services hello-minikube
+
+kubectl get pods
+
+__________________________________________________________________________________________________________________________________________________
+
+
+kubectl run nginx --image nginx 
+
+kubectl get pods
+
+kubectl describe pod nginx
+
+kubectl get pods -o wides  (IP address and node (minikube details))
+
+
+kubectl get pods
+
+kubectl run nginx --image=nginx
+
+kubectl describe pods
+
+kubectl get pods -o wide
+
+kubectl get pod webapp
+
+kubectl describe pod webapp
+
+ready: --running containers in a pod/ total containers in a pod
+
+kubectl delete pod webapp
+
+kubectl run nginx --image=nginx --dry-run=client -o yaml > nginx.yaml
+
+kubectl apply -f redis-definition.yaml 
+
+kubectl get pods
+
+
+vi redis-definition.yml
+
+redis123 to redis 
+
+kubectl apply -f redis-definition.yml
+
+after creating rc-defination.yml
+
+kubectl crate -f rc-defination.yml
+
+kubectl get rs
+
+kubectl get pods
+
+
+kubectl get pods
+
+kubectl get replicasets
+
+kubectl delete pod new-replica-set-kkcr9
+
+kubectl replace -f replicaset-definition.yml 
+
+kubectl get replicaset
+
+kubectl delete replicaset myreplicaset
+
+kubectl scale --replicaset=6 -f replicaset-definition.yml /kubectl scale replicaset myapp-replicaset --replicas=2
+
+
+kubectl scale --replicaset=6 -f myapp-replicaset
+
+kubectl explain replicaset 
+
+kubecte get rs(short cut of replicaset)
+
+kubectl delete rs replicaset-1
+
+kubectl delete rs replicaset-2
+
+kubectl edit rs new-replics-set
+
+kubectl scale rs new-replica-set --replicas=5
+------------------------------------------------------------------
+
+kubectl create -f deployment-defination.yaml
+
+kubectl get deployments
+
+kubectl get replicaset
+
+kubectl get pods
+
+kubectl describe deployment deployment-defination.yml
+
+kubectl get all  ---show all the objects in cluster...
+
+----------------------------------------------------------------------
+
+kubectl get pods
+
+kubectl get rs
+
+kubectl get deployments
+
+kubectl create -f deployment-definition-1.yaml 
+ 
+kubectl get deployment httpd-frontend --image=httpd:2.4-alpine --replicas=3
+
+kubectl get deploy
+
+kubectl rollout status deployment/myapp-deployment..
+
+kubectl rollout histroy deployment/ myapp-deployment
+
+once changed ymal file use bellow command..
+
+kubectl apply -f deployment-defination.yml
+
+or
+
+kubectl set image deployment/myapp-deployment\nginx=nginx:1.9.1
+
+kubectl rollout undo deployment/myapp-deployment
+
+kubectl rollout histroy deployment/myapp-deployment
+
+kubectl get rplicaset..
+
+
+-------------------------------------------
+apiVersion: apps/v1
+kind: Deplyment
+metadata:
+  name: myapp-deployment
+  labes:
+    tier: frontend
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  replicas: 6
+  template:
+    metadata:
+      name: nginx-2
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+
+vi deployment.yml
+
+kubectl get pods
+
+kubectl create -f deployment.yml
+
+kubectl rollout status deployment.apps/myapp-deployment  --to check the status of rollout
+
+kubectl delete deployment myapp-deployment
+
+kubectl create -f deployment 
+
+kubectl rollout status deployment.apps/myapp-deployment
+
+kubectl rollout histroy deployment.apps/myapp-deployment
+
+kubectl delete deployment myapp-deployment
+
+wait for all are deleted
+
+kubeclt get pods
+
+kubectl create -f deployment.yml --record
+
+kubectl descirbe deployment myapp-deployment
+
+kubectl edit deployment myapp-deployment --record
+
+or/ vi editor change to image nginx from ngix:1.18
+
+kubectl roolout status deployme.apps/myapp-deployment 
+
+kubectl descibe depolyment myapp-deployment
+
+or change image by using below command
+
+kubectl set image deployment myapp-deployment nginx=nginx:1.18-perl --record
+
+kubectl roolout status deployme.apps/myapp-deployment
+
+kubectl rollout histroy deployment.apps/myapp-deployment
+
+kubectl get pods
+
+revert back...
+--------------
+
+kubectl rollout undo deployment/myapp-deployment
+
+kubectl rollout status deployment/myapp-deployment
+
+kubectl describe deployment myapp-deployment
+
+kubectl rollout histroy deployment.apps/myapp-deployment (we have 3 revisions.. if undo happend 4 will be cereated and 2 will gone , becasue of same as 2)
+
+need to change in file  image : nginx:1.14-no
+
+run 
+
+kubectl edit deployment myapp-deployment --record
+
+kubectl rollout status deployment/myapp-deployment
+
+kubectl get deployment myapp-deplyment 
+
+kubectl get pods
+
+if image is does not exist even though previous one should be run state...
+
+kubectl rollout histroy deployment.apps/myapp-deployment
+
+kubectl rollout undo deployment/myapp-deployment
+
+kubectl rollout status deployment/myapp-deployment 
+
+
+
+
+
+
+
+
+
+
+
